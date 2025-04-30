@@ -21,10 +21,9 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status' => 0,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()->all(),
-            ]);
+            ], 422);
         }
 
         $user = User::create([
@@ -33,16 +32,12 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        $response = [];
-        $response['user'] = $user->name;
-        $response['token'] = $user->createToken('MyApp')->accessToken;
-        $response['email'] = $user->email;
+        $token = $user->createToken('AuthToken')->accessToken; 
 
         return response()->json([
-            'status' => 1,
-            'message' => 'User registered successfully',
-            'data' => $response,
-        ]);
+            'message' => 'Usuario registrado con éxito!',
+            'user' => $user,
+            'access_token' => $token
+        ], 201);
     }
-
 }
