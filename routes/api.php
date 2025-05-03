@@ -13,4 +13,6 @@ Route::post("register", [AuthController::class, 'register']);
 
 Route::post("login", [AuthController::class, 'login']);
 
-Route::apiResource('events', EventController::class);
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('events', EventController::class);
+});
