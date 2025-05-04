@@ -14,9 +14,9 @@ Route::post("register", [AuthController::class, 'register']);
 
 Route::post("login", [AuthController::class, 'login']);
 
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/categories', [CategoryController::class, 'index']);
 
-Route::get('/events/categories/{id_category}', [EventController::class, 'eventsByCategory'])->name('categories.events');
+Route::get('/categories/{category}', [CategoryController::class, 'show']);
 
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('events', EventController::class);
