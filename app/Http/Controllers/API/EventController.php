@@ -112,7 +112,7 @@ class EventController extends Controller
 
     $isFree = filter_var($request->input('is_free', $event->is_free), FILTER_VALIDATE_BOOLEAN);
 
-$updateData = [
+    $updateData = [
     'title' => $request->input('title', $event->title),
     'address' => $request->input('address', $event->address),
     'event_date' => $request->input('event_date', $event->event_date),
@@ -142,8 +142,18 @@ $updateData = [
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        //
+        $event = Event::findOrFail($id);
+
+        if ($event->image) {
+            Storage::delete($event->image); 
+        }
+
+        $event->delete();
+
+        return response()->json([
+            'message' => 'Evento eliminado con éxito!',
+        ], 200);
     }
 }
