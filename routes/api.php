@@ -22,5 +22,7 @@ Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('events', EventController::class);
 
-    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::get('/users/profile', [ProfileController::class, 'show']);
+
+    Route::put('/users/profile', [ProfileController::class, 'update']);
 });
