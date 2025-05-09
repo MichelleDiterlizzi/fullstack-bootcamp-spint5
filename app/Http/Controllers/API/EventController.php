@@ -156,4 +156,31 @@ class EventController extends Controller
             'message' => 'Evento eliminado con éxito!',
         ], 200);
     }
+
+    public function attendEvent(Request $request, Event $event)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'No estás autenticado.'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'guests_count' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
+        }
+
+        $guestsCount = $request->input('guests_count');
+
+        if ($event->attendees()->where('user_id', $user->id)->exists()) {
+            return response()->json(['message' => 'Ya estás participando en este evento.'], 409);
+        }
+
+        $event->attendees()->attach($user->id, ['guests_count' => $guestsCount]);
+
+        return response()->json(['message' => 'Participación registrada con éxito.', 'event' => $event, 'user' => $user, 'guests_count' => $guestsCount], 201);
+    }   
 }

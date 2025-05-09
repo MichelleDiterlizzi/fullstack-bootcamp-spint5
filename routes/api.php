@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\CategoryController;
 use \App\Http\Controllers\API\ProfileController;
+use Laravel\Passport\Passport;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,4 +28,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/users/profile', [ProfileController::class, 'update']);
 
     Route::post('users/logout', [AuthController::class, 'logout']);
+
+    Route::post('events/{id_event}/users', [EventController::class, 'attendEvent']);
+    Route::delete('events/{id_event}/users', [EventController::class, 'unattendEvent']);
 });
