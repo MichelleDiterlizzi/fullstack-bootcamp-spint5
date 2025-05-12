@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class PassportSeeder extends Seeder
 {
@@ -15,10 +16,10 @@ class PassportSeeder extends Seeder
     {
         DB::table('oauth_clients')->insert([
             [
-                'id' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_ID'),
+                'id' => '9eca6133-3fa0-4408-ba08-e3007d687659',
                 'user_id' => null,
                 'name' => 'Personal Access Client',
-                'secret' => env('PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET'),
+                'secret' => Hash::make('hfzQyfVUvtq9dWfSd63zKWKxfhOC6r0JG3zLHSlw'),
                 'redirect' => 'http://localhost/',
                 'personal_access_client' => true,
                 'password_client' => false,
@@ -27,10 +28,10 @@ class PassportSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'id' => env('PASSPORT_PASSWORD_GRANT_CLIENT_ID'),
+                'id' => '9eca6133-4a08-48cb-9762-337dabc7714c',
                 'user_id' => null,
                 'name' => 'Password Grant Client',
-                'secret' => env('PASSPORT_PASSWORD_GRANT_CLIENT_SECRET'),
+                'secret' => Hash::make('QdMnRU2MgOC2ZFiUvP7qUKZl3lbXULWJwpjCDHwD'),
                 'redirect' => 'http://localhost/',
                 'personal_access_client' => false,
                 'password_client' => true,

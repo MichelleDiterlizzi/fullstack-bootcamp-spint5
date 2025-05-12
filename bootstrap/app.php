@@ -3,8 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Passport\Passport;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -13,9 +14,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'auth:api' => \App\Http\Middleware\EnsureAuthenticatedJson::class,
+            // Aquí podrías añadir middlewares si los necesitas
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->create(); // NOTA: guardamos la app en la variable $app
+
+// 👇 Esta línea es clave: le indica a Passport dónde están las claves
+Passport::loadKeysFrom(storage_path());
+
+return $app;

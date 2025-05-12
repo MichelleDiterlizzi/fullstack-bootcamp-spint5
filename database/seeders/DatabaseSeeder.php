@@ -20,14 +20,14 @@ class DatabaseSeeder extends Seeder
         $this->call(PassportSeeder::class);
 
         $user1 = User::factory()->create([
-            'name' => 'Test User 1',
-            'email' => 'test1@example.com',
+            'name' => 'Fabio',
+            'email' => 'fabio@example.com',
             'password' => Hash::make('password'),
         ]);
 
         $user2 = User::factory()->create([
-            'name' => 'Test User 2',
-            'email' => 'test2@example.com',
+            'name' => 'Maria',
+            'email' => 'maria@example.com',
             'password' => Hash::make('password'),
         ]);
 
