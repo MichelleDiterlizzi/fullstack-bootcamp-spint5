@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -21,8 +22,8 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()->all(),
+            'message' => 'Validation Error',
+            'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -32,7 +33,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        $user->assignRole('user');
+        $user->assignRole(Role::where('name', 'user')->where('guard_name', 'api')->first());
 
         $token = $user->createToken('AuthToken')->accessToken; 
 
@@ -45,6 +46,18 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+        'email' => 'required|string|email',
+        'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 

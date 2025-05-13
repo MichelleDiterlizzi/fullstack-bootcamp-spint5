@@ -15,20 +15,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
-Route::get('/test-hash', function () {
-    $user = User::where('email', 'fabio@example.com')->first();
-    if ($user) {
-        $passwordFromPostman = 'password'; // La contraseña que estás enviando en Postman
-        if (Hash::check($passwordFromPostman, $user->password)) {
-            return response()->json(['message' => 'Password is correct!']);
-        } else {
-            return response()->json(['message' => 'Password is incorrect!']);
-        }
-    } else {
-        return response()->json(['message' => 'User not found!']);
-    }
-});
-
 Route::post("register", [AuthController::class, 'register']);
 
 Route::post("login", [AuthController::class, 'login']);
@@ -44,7 +30,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::put('/users/profile', [ProfileController::class, 'update']);
 
-    Route::post('users/logout', [AuthController::class, 'logout']);
+    Route::post('/users/logout', [AuthController::class, 'logout']);
 
     Route::post('events/{id_event}/users', [EventController::class, 'attendEvent']);
     Route::delete('events/{id_event}/users', [EventController::class, 'unattendEvent']);
