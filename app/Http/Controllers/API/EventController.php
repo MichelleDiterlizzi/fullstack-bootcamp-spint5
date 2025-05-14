@@ -60,7 +60,7 @@ class EventController extends Controller
             'price' => $request->price,
             'is_free' => $request->is_free,
             'description' => $request->description,
-            'image' => $request->image ? $request->file('image')->store('images') : null,
+            'image' => $request->hasFile('image') ? $request->file('image')->store('images', 'public') : null,
             'category_id' => $request->category_id,
         ]);
 
