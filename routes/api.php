@@ -24,7 +24,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::apiResource('events', EventController::class);
+    Route::apiResource('/events', EventController::class);
 
     Route::get('/users/profile', [ProfileController::class, 'show']);
 

@@ -120,7 +120,7 @@ class EventController extends Controller
     'is_free' => $isFree,
     'description' => $request->input('description', $event->description),
     'category_id' => $request->input('category_id', $event->category_id),
-];
+    ];
 
     $event->update($updateData);
 
