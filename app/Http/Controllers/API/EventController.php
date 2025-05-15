@@ -34,17 +34,19 @@ class EventController extends Controller
             'title' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'event_date' => 'required|date_format:Y-m-d\TH:i',
-            'price' => 'required_if:is_free,0|nullable|numeric',
+            'price' => 'required_if:is_free,false|nullable|numeric',
             'is_free' => 'required|boolean',
             'description' => 'required|string|min:50',
             'image' => 'nullable|image|mimes:jpg,png,jpeg|max:5120',
             'category_id' => 'required|exists:categories,id'
         ]);
 
-        if ($validator->fails()) {
+        if ($validator->fails() ||
+        (!$request->boolean('is_free') &&
+    !$request->filled('price'))) {
             return response()->json([
                 'message' => 'Validation Error',
-                'errors' => $validator->errors()->all(),
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -96,8 +98,8 @@ class EventController extends Controller
         'title' => 'nullable|string|max:255',
         'address' => 'nullable|string|max:255',
         'event_date' => 'nullable|date_format:Y-m-d\TH:i',
-        'price' => 'required_if:is_free,0|nullable|numeric',
-        'is_free' => 'nullable|boolean',
+        'price' => 'required_if:is_free,false|numeric',
+        'is_free' => 'boolean|required',
         'description' => 'nullable|string|min:50',
         'image' => 'nullable|image|mimes:jpg,png,jpeg|max:5120',
         'category_id' => 'nullable|exists:categories,id'
