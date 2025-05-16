@@ -161,9 +161,10 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function attendEvent(Request $request, Event $event)
+    public function attendEvent(Request $request, Event $event, $id_event)
     {
-        $user = Auth::user();
+        $event = Event::findOrFail($id_event); // Cargar el modelo explícitamente
+    $user = Auth::user();
 
         if (!$user) {
             return response()->json(['message' => 'No estás autenticado.'], 401);
@@ -187,4 +188,22 @@ class EventController extends Controller
 
         return response()->json(['message' => 'Participación registrada con éxito.', 'event' => $event, 'user' => $user, 'guests_count' => $guestsCount], 201);
     }   
+
+    public function unattendEvent(Request $request, Event $event, $id_event)
+    {
+        $event = Event::findOrFail($id_event); // Cargar el modelo explícitamente
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'No estás autenticado.'], 401);
+        }
+
+        if (!$event->attendees()->where('user_id', $user->id)->exists()) {
+            return response()->json(['message' => 'No estás participando en este evento.'], 409);
+        }
+
+        $event->attendees()->detach($user->id);
+
+        return response()->json(['message' => 'Desasistencia registrada con éxito.'], 200);
+    }
 }
