@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $events = Event::all();
@@ -23,6 +21,19 @@ class EventController extends Controller
             'message' => 'Events retrieved successfully',
             'data' => $events,
         ], 200);
+    }
+
+    private function storeImage(Request $request): ?string{
+        return $request->hasFile('image')
+            ? $request->file('image')->store('images', 'public')
+            : null;
+    }  
+
+    private function deleteImage(?string $path): void
+    {
+        if (is_string($path) && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 
     private function validateEventData(Request $request, bool $isUpdate = false, ?Event $event = null)
@@ -66,9 +77,6 @@ class EventController extends Controller
 
         return true;
     }
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validation = $this->validateEventData($request);
@@ -84,7 +92,7 @@ class EventController extends Controller
             'price' => $request->boolean('is_free') ? null : $request->price,
             'is_free' => $request->is_free,
             'description' => $request->description,
-            'image' => $request->hasFile('image') ? $request->file('image')->store('images', 'public') : null,
+            'image' => $this->storeImage($request),
             'category_id' => $request->category_id,
         ]);
 
@@ -97,9 +105,6 @@ class EventController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, string $id)
     {
         $event = Event::findOrFail($id); 
@@ -109,9 +114,6 @@ class EventController extends Controller
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
      public function update(Request $request, string $id)
     {
         $event = Event::findOrFail($id);
@@ -135,10 +137,8 @@ class EventController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if (is_string($event->image) && Storage::disk('public')->exists($event->image)) {
-                Storage::disk('public')->delete($event->image);
-            }
-            $event->image = $request->file('image')->store('images', 'public');
+            $this->deleteImage($event->image);
+            $event->image = $this->storeImage($request);
             $event->save();
         }
 
@@ -148,16 +148,11 @@ class EventController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Request $request, string $id)
     {
         $event = Event::findOrFail($id);
 
-        if ($event->image) {
-            Storage::delete($event->image); 
-        }
+        $this->deleteImage($event->image);
 
         $event->delete();
 
