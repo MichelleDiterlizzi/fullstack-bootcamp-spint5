@@ -160,6 +160,7 @@ class EventController extends Controller
             'message' => 'Evento eliminado con éxito!',
         ], 200);
     }
+    
 
     public function attendEvent(Request $request, Event $event, $id_event)
     {

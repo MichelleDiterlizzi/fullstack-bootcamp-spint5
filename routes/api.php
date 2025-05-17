@@ -32,6 +32,10 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/users/logout', [AuthController::class, 'logout']);
 
+    Route::delete('/users/profile', [ProfileController::class, 'destroy']);
+
+    Route::delete('/users/{user}', [ProfileController::class, 'destroyOther']);
+
     Route::post('/events/{id_event}/users', [EventController::class, 'attendEvent']);
     Route::delete('/events/{id_event}/users', [EventController::class, 'unattendEvent']);
 });
