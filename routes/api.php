@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\CategoryController;
 use \App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\EventFilterController;
 use Laravel\Passport\Passport;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -40,4 +41,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/events/{id_event}/users', [EventController::class, 'attendEvent']);
     Route::delete('/events/{id_event}/users', [EventController::class, 'unattendEvent']);
+
+    Route::get('/events/popular', [EventFilterController::class, 'popular']);
+    Route::get('/events/free', [EventFilterController::class, 'free']);
+    Route::get('/events/before-time', [EventFilterController::class, 'beforeTime']);
+    Route::get('/events/after-time', [EventFilterController::class, 'afterTime']);
 });
