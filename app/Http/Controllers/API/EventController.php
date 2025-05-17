@@ -8,6 +8,7 @@ use App\Models\Event;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
 class EventController extends Controller
 {
@@ -148,12 +149,12 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function destroy(Request $request, string $id)
-    {
-        $event = Event::findOrFail($id);
+    public function destroy(Request $request, Event $event){
+        if (!Gate::allows('delete', $event)) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
         $this->deleteImage($event->image);
-
         $event->delete();
 
         return response()->json([

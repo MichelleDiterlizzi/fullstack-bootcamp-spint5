@@ -6,7 +6,9 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 use App\Models\User; // Importa el modelo User
+use App\Models\Event; // Importa el modelo Event
 use App\Policies\UserPolicy; // Importa la UserPolicy
+use App\Policies\EventPolicy; // Importa la EventPolicy
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -17,7 +19,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\Policy',
-        User::class => UserPolicy::class, // Registra la UserPolicy para el modelo User
+        User::class => UserPolicy::class,
+        Event::class => EventPolicy::class,
     ];
 
     /**

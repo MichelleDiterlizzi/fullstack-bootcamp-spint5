@@ -26,6 +26,8 @@ Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('/events', EventController::class);
 
+    Route::delete('/events/{event}', [EventController::class, 'destroy']);
+
     Route::get('/users/profile', [ProfileController::class, 'show']);
 
     Route::put('/users/profile', [ProfileController::class, 'update']);
