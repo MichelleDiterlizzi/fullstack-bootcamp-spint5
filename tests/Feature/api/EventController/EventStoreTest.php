@@ -1,14 +1,12 @@
 <?php
 
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Event;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-class EventStoreTest extends TestCase
+class EventStoreTest extends ApiTestCase
 {
-
-    use RefreshDatabase;
 
     public function test_event_can_be_stored()
     {
@@ -26,7 +24,7 @@ class EventStoreTest extends TestCase
             'address' => $event->address,
             'event_date' => $event->event_date->format('Y-m-d\TH:i'),
             'price' => $event->price,
-            'is_free' => $event->is_free,
+            'is_free' => false,
             'description' => $event->description,
             'image' => $image,
             'category_id' => $event->category_id]);

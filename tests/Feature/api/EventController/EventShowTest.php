@@ -1,12 +1,10 @@
 <?php
 
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Event;
 
-class EventShowTest extends TestCase{
-
-    use RefreshDatabase;
+class EventShowTest extends ApiTestCase{
 
     public function test_event_can_be_shown()
     {

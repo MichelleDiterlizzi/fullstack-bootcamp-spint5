@@ -2,15 +2,13 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Event;
 use App\Models\User;
 
-class EventIndexTest extends TestCase
+class EventIndexTest extends ApiTestCase
 {
-    use RefreshDatabase;
-
     public function it_returns_all_events()
     {
 

@@ -20,15 +20,21 @@ class EventFilterController extends Controller
         $limit = $request->input('limit', 5);
         $now = Carbon::now();
 
-        $popularEvents = Event::withCount('attendees')
-            ->where('event_date', '>', $now)
+        $popularEvents = Event::where('event_date', '>', $now)
+            ->withCount('attendees')
             ->orderBy('attendees_count', 'desc')
             ->take($limit)
             ->get();
 
+        if ($popularEvents->isEmpty()) {
+            return response()->json([
+            'message' => 'No hay eventos populares disponibles',
+            'data' => [],
+        ], 200);
+}
+
         return response()->json([
-            'status' => 'success',
-            'message' => 'Eventos más populares obtenidos con éxito',
+            'message' => 'Eventos populares obtenidos con éxito',
             'data' => $popularEvents,
         ], 200);
     }
@@ -51,7 +57,6 @@ class EventFilterController extends Controller
             ->get();
 
         return response()->json([
-            'status' => 'success',
             'message' => 'Próximos eventos gratuitos obtenidos con éxito',
             'data' => $freeEvents,
         ], 200);
@@ -76,7 +81,6 @@ class EventFilterController extends Controller
             ->get();
 
         return response()->json([
-            'status' => 'success',
             'message' => 'Próximos eventos antes de la hora especificada obtenidos con éxito',
             'data' => $dayEvents,
         ], 200);
@@ -101,10 +105,8 @@ class EventFilterController extends Controller
             ->get();
 
         return response()->json([
-            'status' => 'success',
             'message' => 'Próximos eventos a partir de la hora especificada obtenidos con éxito',
             'data' => $eveningEvents,
         ], 200);
     }
-
 }

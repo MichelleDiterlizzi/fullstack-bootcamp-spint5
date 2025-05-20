@@ -4,12 +4,11 @@ namespace Tests\Feature\api\EventController;
 
 use App\Models\Event;
 use App\Models\User;
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class EventAttendTest extends TestCase
+class EventAttendTest extends ApiTestCase
 {
-    use RefreshDatabase;
 
     public function test_authenticated_user_can_attend_event_with_guests(){
         $this->createAuthenticatedUser();

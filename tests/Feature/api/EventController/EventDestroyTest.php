@@ -3,13 +3,13 @@
 namespace Tests\Feature\api\EventController;
 
 use App\Models\Event;
+use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 
-class EventDestroyTest extends TestCase
+class EventDestroyTest extends ApiTestCase
 {
-    use RefreshDatabase;
 
     public function test_user_can_delete_event(){
         $this->createAuthenticatedUser();
@@ -35,8 +35,9 @@ class EventDestroyTest extends TestCase
 
     public function test_user_cannot_delete_event_not_created_by_them(){
         $this->createAuthenticatedUser();
+        $otherUser = User::factory()->create();
 
-        $event = Event::factory()->create(['creator_id' => 1]);
+        $event = Event::factory()->create(['creator_id' => $otherUser->id]);
 
         $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->deleteJson("api/events/{$event->id}")

@@ -2,12 +2,11 @@
 
 use App\Models\Event;
 use App\Models\User;
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class EventUnattendTest extends TestCase
+class EventUnattendTest extends ApiTestCase
 {
-    use RefreshDatabase;
 
     public function test_authenticated_user_can_unattend_event_with_guests(){
         $this->createAuthenticatedUser();

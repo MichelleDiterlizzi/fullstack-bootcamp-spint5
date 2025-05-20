@@ -16,6 +16,11 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
+Route::get('/events/popular', [EventFilterController::class, 'popular']);
+Route::get('/events/free', [EventFilterController::class, 'free']);
+Route::get('/events/before-time', [EventFilterController::class, 'beforeTime']);
+Route::get('/events/after-time', [EventFilterController::class, 'afterTime']);
+
 Route::post("register", [AuthController::class, 'register']);
 
 Route::post("login", [AuthController::class, 'login']);
@@ -41,9 +46,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/events/{id_event}/users', [EventController::class, 'attendEvent']);
     Route::delete('/events/{id_event}/users', [EventController::class, 'unattendEvent']);
+  
 
-    Route::get('/events/popular', [EventFilterController::class, 'popular']);
-    Route::get('/events/free', [EventFilterController::class, 'free']);
-    Route::get('/events/before-time', [EventFilterController::class, 'beforeTime']);
-    Route::get('/events/after-time', [EventFilterController::class, 'afterTime']);
 });
+

@@ -40,6 +40,10 @@ return [
             'busy_timeout' => null,
             'journal_mode' => null,
             'synchronous' => null,
+            'options' => [
+                // Desactivar VACUUM en tests
+                PDO::ATTR_EMULATE_PREPARES => true,
+            ],
         ],
 
         'mysql' => [

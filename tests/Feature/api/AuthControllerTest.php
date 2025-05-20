@@ -1,13 +1,12 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\Feature\ApiTestCase;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
-class AuthControllerTest extends TestCase
+class AuthControllerTest extends ApiTestCase
 {
-    use RefreshDatabase;
 
     public function test_user_can_register_with_valid_credentials()
     {

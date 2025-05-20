@@ -1,14 +1,12 @@
 <?php
 
-use App\Models\Event;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ProfileControllerTest extends TestCase
+class ProfileControllerTest extends ApiTestCase
 {
-    use RefreshDatabase;
 
     public function test_authenticated_user_can_get_profile()
     {
