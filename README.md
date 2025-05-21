@@ -47,7 +47,7 @@ Some examples:
 
 ### 1. Requirements
 
-- PHP 8.2 or higher (with extensions: `mbstring`, `openssl`, `pdo`, `tokenizer`, `xml`, `sodium`, `gd`)
+- PHP 8.2 or higher
 - Composer (https://getcomposer.org/)
 - MySQL (for development)
 - SQLite (for testing, in-memory)
@@ -117,18 +117,6 @@ php artisan migrate --seed
 php artisan passport:install
 ```
 If prompted to run pending migrations and you get an error like `table already exists`, see the Troubleshooting section below.
-
----
-
-## 🧪 Running the API (optional)
-
-If you want to run the API locally (for manual testing):
-
-```sh
-php artisan serve
-```
-
-The API will be available at `http://localhost:8000`.
 
 ---
 
