@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $events = Event::all();
@@ -25,42 +23,76 @@ class EventController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    private function storeImage(Request $request): ?string{
+        return $request->hasFile('image')
+            ? $request->file('image')->store('images', 'public')
+            : null;
+    }  
+
+    private function deleteImage(?string $path): void
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'event_date' => 'required|date_format:Y-m-d\TH:i',
-            'price' => 'required_if:is_free,0|nullable|numeric',
-            'is_free' => 'required|boolean',
-            'description' => 'required|string|min:50',
+        if (is_string($path) && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
+    }
+
+    private function validateEventData(Request $request, bool $isUpdate = false, ?Event $event = null)
+    {
+        $rules = [
+            'title' => ($isUpdate ? 'nullable' : 'required') . '|string|max:255',
+            'address' => ($isUpdate ? 'nullable' : 'required') . '|string|max:255',
+            'event_date' => ($isUpdate ? 'nullable' : 'required') . '|date_format:Y-m-d\TH:i',
+            'price' => [
+                        'nullable',
+                        'required_if:is_free,false',
+                        'numeric',
+                        function ($attribute, $value, $fail) use ($request, $event) {
+                            $isFree = $request->has('is_free')
+                                ? filter_var($request->input('is_free'), FILTER_VALIDATE_BOOLEAN)
+                                : ($event ? $event->is_free : false);
+
+                            if ($isFree && $value !== null) {
+                                $fail('No debes proporcionar un precio si el evento es gratuito.');
+                            }
+
+                            if (!$isFree && ($value === null || $value === '')) {
+                                $fail('Debes proporcionar un precio cuando el evento no es gratuito.');
+                            }
+                        },
+                    ],
+            'is_free' => ($isUpdate ? 'sometimes' : 'required') . '|boolean',
+            'description' => ($isUpdate ? 'nullable' : 'required') . '|string|min:50',
             'image' => 'nullable|image|mimes:jpg,png,jpeg|max:5120',
-            'category_id' => 'required|exists:categories,id'
-        ]);
+            'category_id' => ($isUpdate ? 'nullable' : 'required') . '|exists:categories,id'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation Error',
-                'errors' => $validator->errors()->all(),
+                'errors' => $validator->errors(),
             ], 422);
         }
 
-        $eventData = $request->all();
-        if ($eventData['is_free']) {
-            $eventData['price'] = null;
+        return true;
+    }
+    public function store(Request $request)
+    {
+        $validation = $this->validateEventData($request);
+
+        if ($validation !== true) {
+            return $validation;
         }
 
         $event = new Event([
             'title' => $request->title,
             'address' => $request->address,
             'event_date' => $request->event_date,
-            'price' => $request->price,
+            'price' => $request->boolean('is_free') ? null : $request->price,
             'is_free' => $request->is_free,
             'description' => $request->description,
-            'image' => $request->image ? $request->file('image')->store('images') : null,
+            'image' => $this->storeImage($request),
             'category_id' => $request->category_id,
         ]);
 
@@ -73,9 +105,6 @@ class EventController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, string $id)
     {
         $event = Event::findOrFail($id); 
@@ -85,70 +114,45 @@ class EventController extends Controller
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+     public function update(Request $request, string $id)
     {
         $event = Event::findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
-        'title' => 'nullable|string|max:255',
-        'address' => 'nullable|string|max:255',
-        'event_date' => 'nullable|date_format:Y-m-d\TH:i',
-        'price' => 'required_if:is_free,0|nullable|numeric',
-        'is_free' => 'nullable|boolean',
-        'description' => 'nullable|string|min:50',
-        'image' => 'nullable|image|mimes:jpg,png,jpeg|max:5120',
-        'category_id' => 'nullable|exists:categories,id'
-    ]);
+        $validation = $this->validateEventData($request, true, $event);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Validation Error',
-            'errors' => $validator->errors()->all(),
-        ], 422);
-    }
-
-    $isFree = filter_var($request->input('is_free', $event->is_free), FILTER_VALIDATE_BOOLEAN);
-
-    $updateData = [
-    'title' => $request->input('title', $event->title),
-    'address' => $request->input('address', $event->address),
-    'event_date' => $request->input('event_date', $event->event_date),
-    'price' => $isFree ? null : $request->input('price', $event->price),
-    'is_free' => $isFree,
-    'description' => $request->input('description', $event->description),
-    'category_id' => $request->input('category_id', $event->category_id),
-];
-
-    $event->update($updateData);
-
-    
-    if ($request->hasFile('image')) {
-        if ($event->image) {
-            Storage::delete($event->image); 
+        if ($validation !== true) {
+            return $validation;
         }
-        $event->image = $request->file('image')->store('images');
-        $event->save(); 
+
+        $isFree = $request->has('is_free') ? $request->boolean('is_free') : $event->is_free;
+
+        $event->update([
+            'title' => $request->input('title', $event->title),
+            'address' => $request->input('address', $event->address),
+            'event_date' => $request->input('event_date', $event->event_date),
+            'price' => $isFree ? null : $request->input('price', $event->price),
+            'is_free' => $isFree,
+            'description' => $request->input('description', $event->description),
+            'category_id' => $request->input('category_id', $event->category_id),
+        ]);
+
+        if ($request->hasFile('image')) {
+            $this->deleteImage($event->image);
+            $event->image = $this->storeImage($request);
+            $event->save();
+        }
+
+        return response()->json([
+            'message' => 'Evento actualizado con éxito!',
+            'event' => $event,
+        ], 200);
     }
 
-    return response()->json([
-        'message' => 'Evento actualizado con éxito!',
-        'event' => $event,
-    ], 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Request $request, string $id)
     {
         $event = Event::findOrFail($id);
 
-        if ($event->image) {
-            Storage::delete($event->image); 
-        }
+        $this->deleteImage($event->image);
 
         $event->delete();
 
