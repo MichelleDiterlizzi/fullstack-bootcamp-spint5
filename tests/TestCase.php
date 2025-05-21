@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-
 abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
@@ -31,11 +30,11 @@ abstract class TestCase extends BaseTestCase
         ];
         
         $loginResponse = $this->postJson('/api/login', $loginData);
+
+        
         $this->user->assignRole(Role::where('name', 'user')->where('guard_name', 'api')->first());
         $this->token = $loginResponse->json('access_token');
     }
-    
-
 
     protected function setUp(): void
     {

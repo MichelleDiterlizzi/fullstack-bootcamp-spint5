@@ -71,4 +71,9 @@ class User extends Authenticatable
         return $this->hasMany(Event::class, 'creator_id', 'id');
 
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin', 'api');
+    }
 }

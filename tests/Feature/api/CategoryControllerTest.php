@@ -1,11 +1,8 @@
 <?php
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\ApiTestCase;
 
-Class CategoryControllerTest extends TestCase
+Class CategoryControllerTest extends ApiTestCase
 {
-
-    use RefreshDatabase;
 
     public function test_categories_are_seeded_correctly(){
         $this->assertDatabaseHas('categories', ['name' => 'Conciertos y Festivales']);

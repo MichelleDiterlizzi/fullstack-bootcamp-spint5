@@ -1,15 +1,14 @@
 <?php
 
-use Tests\TestCase;
+use Tests\Feature\ApiTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Event;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 
 
-class EventUpdateTest extends TestCase{
+class EventUpdateTest extends ApiTestCase{
 
-    use RefreshDatabase;
 
     public function test_event_can_update_with_valid_data(){
 

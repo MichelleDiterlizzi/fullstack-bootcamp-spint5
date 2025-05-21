@@ -8,6 +8,7 @@ use App\Models\Event;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
 class EventController extends Controller
 {
@@ -148,22 +149,24 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function destroy(Request $request, string $id)
-    {
-        $event = Event::findOrFail($id);
+    public function destroy(Request $request, Event $event){
+        if (!Gate::allows('delete', $event)) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
         $this->deleteImage($event->image);
-
         $event->delete();
 
         return response()->json([
             'message' => 'Evento eliminado con éxito!',
         ], 200);
     }
+    
 
-    public function attendEvent(Request $request, Event $event)
+    public function attendEvent(Request $request, Event $event, $id_event)
     {
-        $user = Auth::user();
+        $event = Event::findOrFail($id_event); // Cargar el modelo explícitamente
+    $user = Auth::user();
 
         if (!$user) {
             return response()->json(['message' => 'No estás autenticado.'], 401);
@@ -187,4 +190,22 @@ class EventController extends Controller
 
         return response()->json(['message' => 'Participación registrada con éxito.', 'event' => $event, 'user' => $user, 'guests_count' => $guestsCount], 201);
     }   
+
+    public function unattendEvent(Request $request, Event $event, $id_event)
+    {
+        $event = Event::findOrFail($id_event); // Cargar el modelo explícitamente
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'No estás autenticado.'], 401);
+        }
+
+        if (!$event->attendees()->where('user_id', $user->id)->exists()) {
+            return response()->json(['message' => 'No estás participando en este evento.'], 409);
+        }
+
+        $event->attendees()->detach($user->id);
+
+        return response()->json(['message' => 'Desasistencia registrada con éxito.'], 200);
+    }
 }
