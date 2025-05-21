@@ -12,8 +12,8 @@ class EventIndexTest extends ApiTestCase
     public function it_returns_all_events()
     {
 
-        $user = User::factory()->create();
-        $token = $user->createToken('AuthToken')->accessToken;
+        $this->createAuthenticatedUser();
+        $token = $this->user->createToken('AuthToken')->accessToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
